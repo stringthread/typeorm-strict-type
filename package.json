@@ -7,8 +7,8 @@
   "scripts": {
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
-    "test": "vitest",
-    "test:types": "vitest typecheck",
+    "test": "vitest --typecheck",
+    "test:types": "vitest --typecheck-only",
     "build": "tsc",
     "prepublishOnly": "yarn build"
   },

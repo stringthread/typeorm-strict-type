@@ -4,6 +4,9 @@ import tsConfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tsConfigPaths()],
   test: {
-    include: ["test/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+    include: ["test/**/*.?(c|m)[jt]s?(x)"],
+    typecheck: {
+      include: ["test/**/*.?(c|m)[jt]s?(x)"],
+    },
   },
 });
