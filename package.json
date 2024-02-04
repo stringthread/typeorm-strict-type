@@ -2,16 +2,24 @@
   "name": "typeorm-strict-type",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "test": "vitest",
-    "test:types": "vitest typecheck"
+    "test:types": "vitest typecheck",
+    "build": "tsc",
+    "prepublishOnly": "yarn build"
   },
   "keywords": [],
   "author": "stringthread",
   "license": "MIT",
+  "private": "false",
+  "files": [
+    "lib",
+    "src"
+  ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
