@@ -12,7 +12,11 @@ export type Waypoints<T extends string[]> = T extends [infer F, ...infer R]
   ? R extends string[]
     ? [F] | [F, ...Waypoints<R>]
     : never
-  : never;
+  : [];
 
 export type StringToPath<S extends string> =
-  S extends `${infer F}.${infer Rest}` ? [F, ...StringToPath<Rest>] : [S];
+  S extends `${infer F}.${infer Rest}`
+    ? [F, ...StringToPath<Rest>]
+    : S extends ""
+      ? []
+      : [S];
