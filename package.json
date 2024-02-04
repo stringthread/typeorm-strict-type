@@ -8,5 +8,8 @@
   },
   "keywords": [],
   "author": "stringthread",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
 }
