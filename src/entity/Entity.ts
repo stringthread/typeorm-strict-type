@@ -6,5 +6,5 @@ const EntityNominality = Symbol();
  * This class provides no actual functionalities.
  */
 export abstract class Entity {
-  [EntityNominality] = EntityNominality;
+  private [EntityNominality] = EntityNominality;
 }
