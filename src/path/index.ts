@@ -1,22 +1,19 @@
 type PathImpl<K extends string | number, V> = V extends object
-  ? [`${K}`, ...Path<V>]
+  ? [`${K}`] | [`${K}`, ...Path<V>]
   : [`${K}`];
 
-export type Path<T> = T extends object
-  ? {
-      [K in keyof T]: PathImpl<K & string, T[K]>;
-    }[keyof T]
-  : never;
-
-export type Waypoints<T extends string[]> = T extends [infer F, ...infer R]
-  ? R extends string[]
-    ? [F] | [F, ...Waypoints<R>]
-    : never
-  : [];
+export type Path<T> =
+  | (T extends object
+      ? {
+          [K in keyof T]: PathImpl<K & string, T[K]>;
+        }[keyof T]
+      : never)
+  | [];
 
 export type StringToPath<S extends string> =
-  S extends `${infer F}.${infer Rest}`
-    ? [F, ...StringToPath<Rest>]
-    : S extends ""
-      ? []
-      : [S];
+  | (S extends `${infer F}.${infer Rest}`
+      ? [F] | [F, ...StringToPath<Rest>]
+      : S extends ""
+        ? never
+        : [S])
+  | [];
