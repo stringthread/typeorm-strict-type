@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from "vitest";
 
-import { Path, StringToPath } from "@/path";
+import { Path, PathString, StringToPath } from "@/path";
 
 describe("Path", () => {
   it("should return keys if depth==1", () => {
@@ -32,18 +32,59 @@ describe("Path", () => {
   });
 });
 
+describe("PathString", () => {
+  it("should return keys if depth == 1", () => {
+    expectTypeOf<
+      PathString<{
+        a: number;
+        b: string;
+      }>
+    >().toEqualTypeOf<"" | "a" | "b">();
+  });
+
+  it("should return dot separated keys if depth > 1", () => {
+    expectTypeOf<
+      PathString<{
+        a: {
+          b: number;
+          c: { d: string };
+        };
+        e: number;
+      }>
+    >().toEqualTypeOf<"" | "a" | "a.b" | "a.c" | "a.c.d" | "e">();
+  });
+});
+
 describe("StringToPath", () => {
   it("should return same as input when input has no dots", () => {
-    expectTypeOf<StringToPath<"a" | "b">>().toEqualTypeOf<[] | ["a"] | ["b"]>();
+    type t = {
+      a: number;
+      b: string;
+      c: string;
+    };
+    expectTypeOf<StringToPath<t, "a" | "b">>().toEqualTypeOf<
+      [] | ["a"] | ["b"]
+    >();
   });
 
   it("should return dot-separated paths", () => {
-    expectTypeOf<StringToPath<"a.b">>().toEqualTypeOf<
-      [] | ["a"] | ["a", "b"]
+    type t = {
+      a: {
+        b: number;
+        c: { d: string };
+      };
+      e: number;
+    };
+    expectTypeOf<StringToPath<t, "a.b" | "a.c.d">>().toEqualTypeOf<
+      [] | ["a"] | ["a", "b"] | ["a", "c"] | ["a", "c", "d"]
     >();
   });
 
   it("should return empty tuple when input is empty", () => {
-    expectTypeOf<StringToPath<"">>().toEqualTypeOf<[]>();
+    type t = {
+      a: { b: number };
+      c: string;
+    };
+    expectTypeOf<StringToPath<t, "">>().toEqualTypeOf<[]>();
   });
 });
