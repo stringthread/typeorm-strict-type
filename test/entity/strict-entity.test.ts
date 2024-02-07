@@ -39,6 +39,31 @@ describe("StrictEntity", () => {
         a: number;
       };
     }>();
+    expectTypeOf<StrictEntity<B, "a">>().toEqualTypeOf<{
+      n: number;
+      a: {
+        a: number;
+      };
+    }>();
+  });
+
+  it("should remove relations with path: input relation depth > 1", () => {
+    class A extends Entity {
+      a: number = 0;
+    }
+    class B extends Entity {
+      a: A = new A();
+      n: number = 1;
+    }
+    class C extends Entity {
+      b: B = new B();
+      b2: B = new B();
+      b3: B = new B();
+      m: number = 2;
+    }
+    expectTypeOf<StrictEntity<C>>().toEqualTypeOf<{
+      m: number;
+    }>();
   });
 
   it("should keep relations with path: input relation depth > 1", () => {
@@ -52,9 +77,15 @@ describe("StrictEntity", () => {
     class C extends Entity {
       b: B = new B();
       b2: B = new B();
+      b3: B = new B();
       m: number = 2;
     }
-    expectTypeOf<StrictEntity<C, ["b", "a"] | ["b2"]>>().toEqualTypeOf<{
+    expectTypeOf<StrictEntity<C, ["b"] | ["b", "a"] | ["b2"]>>().toEqualTypeOf<{
+      m: number;
+      b: { a: { a: number }; n: number };
+      b2: { n: number };
+    }>();
+    expectTypeOf<StrictEntity<C, "b.a" | "b2">>().toEqualTypeOf<{
       m: number;
       b: { a: { a: number }; n: number };
       b2: { n: number };
