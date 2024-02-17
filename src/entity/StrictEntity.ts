@@ -1,30 +1,31 @@
 import { Path, PathString, StringToPath } from "@/path";
-import { Entity } from "./Entity";
-import { ConditionalExcept, ConditionalPickDeep, UnionToIntersection } from "type-fest";
+import { ConditionalExcept, UnionToIntersection } from "type-fest";
 import { SimplifyDeep } from "type-fest/source/merge-deep";
+import { IsRelation, PickRelations } from "./Relation";
 
-type _StrictEntity<E extends Entity, P extends Path<ConditionalPickDeep<E, Entity>> = []> = ConditionalExcept<
+type _StrictEntity<E extends object, P extends Path<PickRelations<E>> = []> = ConditionalExcept<
   {
     [K in keyof E]: UnionToIntersection<
-      E[K] extends Entity
-        ? P extends [K, ...infer R]
-          ? R extends Path<ConditionalPickDeep<E[K], Entity>>
-            ? _StrictEntity<E[K], R>
-            : _StrictEntity<E[K]>
-          : never
+      E[K] extends object
+        ? IsRelation<E[K]> extends true
+          ? P extends [K, ...infer R]
+            ? R extends Path<PickRelations<E[K]>>
+              ? _StrictEntity<E[K], R>
+              : _StrictEntity<E[K]>
+            : never
+          : E[K]
         : E[K]
     >;
   },
   never
 >;
 
-export type StrictEntity<
-  E extends Entity,
-  P extends Path<ConditionalPickDeep<E, Entity>> | PathString<ConditionalPickDeep<E, Entity>> = [],
-> = [P] extends [PathString<ConditionalPickDeep<E, Entity>>]
-  ? StringToPath<ConditionalPickDeep<E, Entity>, P> extends Path<ConditionalPickDeep<E, Entity>>
-    ? SimplifyDeep<_StrictEntity<E, StringToPath<ConditionalPickDeep<E, Entity>, P>>>
+export type StrictEntity<E extends object, P extends Path<PickRelations<E>> | PathString<PickRelations<E>> = []> = [
+  P,
+] extends [PathString<PickRelations<E>>]
+  ? StringToPath<PickRelations<E>, P> extends Path<PickRelations<E>>
+    ? SimplifyDeep<_StrictEntity<E, StringToPath<PickRelations<E>, P>>>
     : never
-  : [P] extends [Path<ConditionalPickDeep<E, Entity>>]
+  : [P] extends [Path<PickRelations<E>>]
     ? SimplifyDeep<_StrictEntity<E, P>>
     : never;

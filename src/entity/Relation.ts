@@ -1,13 +1,9 @@
-import { ConditionalExcept, ConditionalPick } from "type-fest";
+import { ConditionalPickDeep } from "type-fest";
 
-import { Entity } from "./Entity";
+declare const RelationNominality: unique symbol;
 
-/**
- * Type to pick properties of relations
- */
-export type Relation<E extends Entity> = ConditionalPick<E, Entity>;
+export type Relation<T extends object> = T & { [RelationNominality]: never };
 
-/**
- * Type to omit properties of relations
- */
-export type Column<E extends Entity> = ConditionalExcept<E, Entity>;
+export type IsRelation<T> = T extends { [RelationNominality]: never } ? true : false;
+
+export type PickRelations<T extends object> = ConditionalPickDeep<T, { [RelationNominality]: never }>;
