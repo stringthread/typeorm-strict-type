@@ -1,15 +1,9 @@
 import { Path, PathString, StringToPath } from "@/path";
 import { Entity } from "./Entity";
-import {
-  ConditionalExcept,
-  ConditionalPickDeep,
-  UnionToIntersection,
-} from "type-fest";
+import { ConditionalExcept, ConditionalPickDeep, UnionToIntersection } from "type-fest";
+import { SimplifyDeep } from "type-fest/source/merge-deep";
 
-type _StrictEntity<
-  E extends Entity,
-  P extends Path<ConditionalPickDeep<E, Entity>> = [],
-> = ConditionalExcept<
+type _StrictEntity<E extends Entity, P extends Path<ConditionalPickDeep<E, Entity>> = []> = ConditionalExcept<
   {
     [K in keyof E]: UnionToIntersection<
       E[K] extends Entity
@@ -26,15 +20,11 @@ type _StrictEntity<
 
 export type StrictEntity<
   E extends Entity,
-  P extends
-    | Path<ConditionalPickDeep<E, Entity>>
-    | PathString<ConditionalPickDeep<E, Entity>> = [],
+  P extends Path<ConditionalPickDeep<E, Entity>> | PathString<ConditionalPickDeep<E, Entity>> = [],
 > = [P] extends [PathString<ConditionalPickDeep<E, Entity>>]
-  ? StringToPath<ConditionalPickDeep<E, Entity>, P> extends Path<
-      ConditionalPickDeep<E, Entity>
-    >
-    ? _StrictEntity<E, StringToPath<ConditionalPickDeep<E, Entity>, P>>
+  ? StringToPath<ConditionalPickDeep<E, Entity>, P> extends Path<ConditionalPickDeep<E, Entity>>
+    ? SimplifyDeep<_StrictEntity<E, StringToPath<ConditionalPickDeep<E, Entity>, P>>>
     : never
   : [P] extends [Path<ConditionalPickDeep<E, Entity>>]
-    ? _StrictEntity<E, P>
+    ? SimplifyDeep<_StrictEntity<E, P>>
     : never;
