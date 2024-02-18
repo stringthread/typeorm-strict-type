@@ -23,12 +23,60 @@ describe("Path", () => {
     >().toEqualTypeOf<[] | ["a"] | ["b"] | ["b", "c"]>();
   });
 
+  it("should return keys in promise", () => {
+    expectTypeOf<
+      Path<{
+        a: 1;
+        b: Promise<{
+          c: "c";
+        }>;
+      }>
+    >().toEqualTypeOf<[] | ["a"] | ["b"] | ["b", "c"]>();
+  });
+
+  it("should return keys in array", () => {
+    expectTypeOf<
+      Path<{
+        a: 1;
+        b: {
+          c: "c";
+        }[];
+      }>
+    >().toEqualTypeOf<[] | ["a"] | ["b"] | ["b", "c"]>();
+  });
+
+  it("should work with class", () => {
+    class B {
+      constructor(public c: "c") {}
+    }
+    class A {
+      constructor(
+        public a: 1,
+        public b: B
+      ) {}
+    }
+    expectTypeOf<Path<A>>().toEqualTypeOf<[] | ["a"] | ["b"] | ["b", "c"]>();
+  });
+
   it("should return never if empty", () => {
     expectTypeOf<Path<object>>().toEqualTypeOf<[]>();
   });
 
   it("should return never if undefined", () => {
     expectTypeOf<Path<undefined>>().toEqualTypeOf<[]>();
+  });
+
+  it("should ignore non-string object keys", () => {
+    const _symbol = Symbol();
+
+    expectTypeOf<
+      Path<{
+        a: 1;
+        b: "b";
+        1: "number";
+        [_symbol]: "symbol";
+      }>
+    >().toEqualTypeOf<[] | ["a"] | ["b"]>();
   });
 });
 

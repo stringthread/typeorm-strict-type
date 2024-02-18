@@ -1,22 +1,50 @@
-type PathImpl<K extends string | number, V> = V extends object
-  ? [`${K}`] | [`${K}`, ...Path<V>]
-  : [`${K}`];
+import { ObjectId } from "typeorm/driver/mongodb/typings";
+
+type HasPath<V> =
+  V extends Promise<infer I>
+    ? HasPath<I>
+    : V extends Array<infer I>
+      ? HasPath<I>
+      : V extends string
+        ? false
+        : V extends number
+          ? false
+          : V extends boolean
+            ? false
+            : V extends (...props: never[]) => unknown
+              ? false
+              : V extends Buffer
+                ? false
+                : V extends Date
+                  ? false
+                  : V extends ObjectId
+                    ? false
+                    : V extends object
+                      ? true
+                      : false;
+
+type PathImpl<K extends string, V> =
+  V extends Promise<infer I>
+    ? PathImpl<K, I>
+    : V extends Array<infer I>
+      ? PathImpl<K, I>
+      : HasPath<V> extends true
+        ? [K] | [K, ...Path<V>]
+        : [K];
 
 export type Path<T> =
-  | (T extends object
-      ? {
-          [K in keyof T]: PathImpl<K & string, T[K]>;
-        }[keyof T]
-      : never)
+  | {
+      [K in keyof T]: K extends string ? PathImpl<K, T[K]> : never;
+    }[keyof T]
   | [];
 
-type PathStringImpl<K extends string | number, V> = V extends object
+type PathStringImpl<K extends string, V> = V extends object
   ? `${K}` | `${K}.${_PathString<V>}`
   : `${K}`;
 
 type _PathString<T> = T extends object
   ? {
-      [K in keyof T]: PathStringImpl<K & string, T[K]>;
+      [K in keyof T]: K extends string ? PathStringImpl<K, T[K]> : never;
     }[keyof T]
   : never;
 
