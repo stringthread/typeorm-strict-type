@@ -2,8 +2,12 @@ import { Path, PathString, StringToPath } from "@/path";
 import { ConditionalExcept, UnionToIntersection } from "type-fest";
 import { SimplifyDeep } from "type-fest/source/merge-deep";
 import { IsRelation, PickRelations } from "./Relation";
+import { ObjectLiteral } from "typeorm";
 
-type _StrictEntity<E extends object, P extends Path<PickRelations<E>> = []> = ConditionalExcept<
+type _StrictEntity<
+  E extends ObjectLiteral,
+  P extends Path<PickRelations<E>> = [],
+> = ConditionalExcept<
   {
     [K in keyof E]: UnionToIntersection<
       E[K] extends object
@@ -20,9 +24,10 @@ type _StrictEntity<E extends object, P extends Path<PickRelations<E>> = []> = Co
   never
 >;
 
-export type StrictEntity<E extends object, P extends Path<PickRelations<E>> | PathString<PickRelations<E>> = []> = [
-  P,
-] extends [PathString<PickRelations<E>>]
+export type StrictEntity<
+  E extends ObjectLiteral,
+  P extends Path<PickRelations<E>> | PathString<PickRelations<E>> = [],
+> = [P] extends [PathString<PickRelations<E>>]
   ? StringToPath<PickRelations<E>, P> extends Path<PickRelations<E>>
     ? SimplifyDeep<_StrictEntity<E, StringToPath<PickRelations<E>, P>>>
     : never
