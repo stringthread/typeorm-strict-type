@@ -1,5 +1,9 @@
 import { StrictEntity } from "@/entity/StrictEntity";
-import { FindOptionsPath } from "@/options/FindOptions";
+import {
+  FindManyOptionsWithRelations,
+  FindOneOptionsWithRelations,
+  FindOptionsRelationsPath,
+} from "@/options/FindOptions";
 import {
   FindManyOptions,
   FindOneOptions,
@@ -16,16 +20,27 @@ export type SafeRepository<Entity extends ObjectLiteral> = Omit<
   SafeRepositoryOverrides<Entity>;
 
 interface SafeRepositoryOverrides<Entity extends ObjectLiteral> {
-  find<Options extends FindManyOptions<Entity> = never>(
-    options?: Options
-  ): Promise<StrictEntity<Entity, FindOptionsPath<Entity, Options>>[]>;
+  find(
+    options?: Omit<FindManyOptions<Entity>, "relations">
+  ): Promise<StrictEntity<Entity, never>[]>;
+  find<Relations extends FindManyOptions<Entity>["relations"]>(
+    options: FindManyOptionsWithRelations<Entity, Relations>
+  ): Promise<
+    StrictEntity<Entity, FindOptionsRelationsPath<Entity, Relations>>[]
+  >;
   findBy(
     options?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[]
   ): Promise<StrictEntity<Entity>[]>;
-  findAndCount<Options extends FindManyOptions<Entity> = never>(
-    options?: Options
+  findAndCount(
+    options?: Omit<FindManyOptions<Entity>, "relations">
+  ): Promise<[StrictEntity<Entity, never>[], number]>;
+  findAndCount<Relations extends FindManyOptions<Entity>["relations"]>(
+    options: FindManyOptionsWithRelations<Entity, Relations>
   ): Promise<
-    [StrictEntity<Entity, FindOptionsPath<Entity, Options>>[], number]
+    [
+      StrictEntity<Entity, FindOptionsRelationsPath<Entity, Relations>>[],
+      number,
+    ]
   >;
   findAndCountBy(
     options?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[]
@@ -34,9 +49,15 @@ interface SafeRepositoryOverrides<Entity extends ObjectLiteral> {
    * @deprecated use `findBy` method instead in conjunction with `In` operator
    */
   findByIds(ids: any[]): Promise<StrictEntity<Entity>[]>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  findOne<Options extends FindOneOptions<Entity> = never>(
-    options?: Options
-  ): Promise<StrictEntity<Entity, FindOptionsPath<Entity, Options>> | null>;
+  findOne(
+    options?: Omit<FindOneOptions<Entity>, "relations">
+  ): Promise<StrictEntity<Entity, never> | null>;
+  findOne<Relations extends FindOneOptions<Entity>["relations"]>(
+    options: FindOneOptionsWithRelations<Entity, Relations>
+  ): Promise<StrictEntity<
+    Entity,
+    FindOptionsRelationsPath<Entity, Relations>
+  > | null>;
   findOneBy(
     options?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[]
   ): Promise<StrictEntity<Entity> | null>;
@@ -46,9 +67,12 @@ interface SafeRepositoryOverrides<Entity extends ObjectLiteral> {
   findOneById(
     id: number | string | Date | ObjectId
   ): Promise<StrictEntity<Entity> | null>;
-  findOneOrFail<Options extends FindOneOptions<Entity> = never>(
-    options?: Options
-  ): Promise<StrictEntity<Entity, FindOptionsPath<Entity, Options>>>;
+  findOneOrFail(
+    options?: Omit<FindOneOptions<Entity>, "relations">
+  ): Promise<StrictEntity<Entity, never>>;
+  findOneOrFail<Relations extends FindOneOptions<Entity>["relations"]>(
+    options: FindOneOptionsWithRelations<Entity, Relations>
+  ): Promise<StrictEntity<Entity, FindOptionsRelationsPath<Entity, Relations>>>;
   findOneByOrFail(
     options?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[]
   ): Promise<StrictEntity<Entity>>;
