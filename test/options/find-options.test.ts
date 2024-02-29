@@ -1,9 +1,9 @@
 import { Relation } from "@/entity/Relation";
-import { FindOptionsPath } from "@/options/FindOptions";
+import { FindOptionsRelationsPath } from "@/options/FindOptions";
 import { FindOneOptions } from "typeorm";
 import { describe, expectTypeOf, it } from "vitest";
 
-describe("FindOptionsPath", () => {
+describe("FindOptionsRelationsPath", () => {
   it("should return proper path for FindOneOptions", () => {
     type Entity = {
       a: number;
@@ -27,18 +27,18 @@ describe("FindOptionsPath", () => {
       }>;
     };
 
-    type Options = {
-      relations: {
-        b: {
-          d: true;
-        };
-        b2: true;
+    type Relations = {
+      b: {
+        d: true;
       };
+      b2: true;
     };
 
-    expectTypeOf<Options>().toMatchTypeOf<FindOneOptions<Entity>>();
+    expectTypeOf<Relations>().toMatchTypeOf<
+      FindOneOptions<Entity>["relations"]
+    >();
 
-    expectTypeOf<FindOptionsPath<Entity, Options>>().toEqualTypeOf<
+    expectTypeOf<FindOptionsRelationsPath<Entity, Relations>>().toEqualTypeOf<
       [] | ["b"] | ["b", "d"] | ["b2"]
     >();
   });
@@ -61,18 +61,16 @@ describe("FindOptionsPath", () => {
         public b3: Relation<B>
       ) {}
     }
-    type Options = {
-      relations: {
-        b: {
-          d: true;
-        };
-        b2: true;
+    type Relations = {
+      b: {
+        d: true;
       };
+      b2: true;
     };
 
-    expectTypeOf<Options>().toMatchTypeOf<FindOneOptions<A>>();
+    expectTypeOf<Relations>().toMatchTypeOf<FindOneOptions<A>["relations"]>();
 
-    expectTypeOf<FindOptionsPath<A, Options>>().toEqualTypeOf<
+    expectTypeOf<FindOptionsRelationsPath<A, Relations>>().toEqualTypeOf<
       [] | ["b"] | ["b", "d"] | ["b2"]
     >();
   });
@@ -100,18 +98,18 @@ describe("FindOptionsPath", () => {
       };
     };
 
-    type Options = {
-      relations: {
-        b: {
-          d: true;
-        };
-        b2: true;
+    type Relations = {
+      b: {
+        d: true;
       };
+      b2: true;
     };
 
-    expectTypeOf<Options>().toMatchTypeOf<FindOneOptions<Entity>>();
+    expectTypeOf<Relations>().toMatchTypeOf<
+      FindOneOptions<Entity>["relations"]
+    >();
 
-    expectTypeOf<FindOptionsPath<Entity, Options>>().toEqualTypeOf<
+    expectTypeOf<FindOptionsRelationsPath<Entity, Relations>>().toEqualTypeOf<
       [] | ["b"] | ["b", "d"] | ["b2"]
     >();
   });
@@ -127,10 +125,10 @@ describe("FindOptionsPath", () => {
       }>;
     };
 
-    type Options = Record<string, never>;
+    expectTypeOf<FindOptionsRelationsPath<Entity, undefined>>().toEqualTypeOf<
+      []
+    >();
 
-    expectTypeOf<Options>().toMatchTypeOf<FindOneOptions<Entity>>();
-
-    expectTypeOf<FindOptionsPath<Entity, Options>>().toEqualTypeOf<[]>();
+    expectTypeOf<FindOptionsRelationsPath<Entity, never>>().toEqualTypeOf<[]>();
   });
 });
