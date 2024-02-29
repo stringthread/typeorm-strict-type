@@ -1,1 +1,2 @@
-export { Entity } from "./Entity";
+export { StrictEntity } from "./StrictEntity";
+export { Relation, IsRelation, PickRelations } from "./Relation";
