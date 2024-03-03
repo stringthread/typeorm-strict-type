@@ -1,3 +1,4 @@
+import { MAX_RECURSIVE_LENGTH } from "@/constants";
 import { ObjectId } from "typeorm/driver/mongodb/typings";
 
 type HasPath<V> =
@@ -23,28 +24,39 @@ type HasPath<V> =
                       ? true
                       : false;
 
-type PathImpl<K extends string, V> =
-  V extends Promise<infer I>
+type PathImpl<
+  K extends string,
+  V,
+  C extends 0[] = [],
+> = C["length"] extends MAX_RECURSIVE_LENGTH
+  ? [K] | [K, ...any[]] // eslint-disable-line @typescript-eslint/no-explicit-any
+  : V extends Promise<infer I>
     ? PathImpl<K, I>
     : V extends Array<infer I>
       ? PathImpl<K, I>
       : HasPath<V> extends true
-        ? [K] | [K, ...Path<V>]
+        ? [K] | [K, ...Path<V, [...C, 0]>]
         : [K];
 
-export type Path<T> =
+export type Path<T, C extends 0[] = []> =
   | {
-      [K in keyof T]: K extends string ? PathImpl<K, T[K]> : never;
+      [K in keyof T]: K extends string ? PathImpl<K, T[K], C> : never;
     }[keyof T]
   | [];
 
-type PathStringImpl<K extends string, V> = V extends object
-  ? `${K}` | `${K}.${_PathString<V>}`
-  : `${K}`;
+type PathStringImpl<
+  K extends string,
+  V,
+  C extends 0[] = [],
+> = C["length"] extends MAX_RECURSIVE_LENGTH
+  ? `${K}` | `${K}.${any}` // eslint-disable-line @typescript-eslint/no-explicit-any
+  : V extends object
+    ? `${K}` | `${K}.${_PathString<V, [...C, 0]>}`
+    : `${K}`;
 
-type _PathString<T> = T extends object
+type _PathString<T, C extends 0[] = []> = T extends object
   ? {
-      [K in keyof T]: K extends string ? PathStringImpl<K, T[K]> : never;
+      [K in keyof T]: K extends string ? PathStringImpl<K, T[K], C> : never;
     }[keyof T]
   : never;
 
