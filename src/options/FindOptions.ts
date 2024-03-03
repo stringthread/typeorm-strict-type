@@ -10,7 +10,7 @@ export type FindOptionsRelationsPath<
   RequiredDeep<
     PickDeep<
       Relations,
-      Paths<PickRelations<PickRelations<Entity>>> & Paths<Relations>
+      Paths<PickRelations<Entity> & Relations> & Paths<Relations>
     >
   >
 > &
