@@ -19,7 +19,6 @@
   "homepage": "https://github.com/stringthread/typeorm-strict-type",
   "author": "stringthread",
   "license": "MIT",
-  "private": "false",
   "files": [
     "lib",
     "src"
