@@ -1,7 +1,7 @@
 {
   "name": "typeorm-strict-type",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "An all-TypeScript package which provides safer typing for functions in TypeORM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -9,10 +9,14 @@
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "test": "vitest --typecheck",
     "test:types": "vitest --typecheck.only",
-    "build": "tsc",
+    "build": "tsc --build tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
-  "keywords": [],
+  "keywords": [
+    "typeorm",
+    "typescript"
+  ],
+  "homepage": "https://github.com/stringthread/typeorm-strict-type",
   "author": "stringthread",
   "license": "MIT",
   "private": "false",
