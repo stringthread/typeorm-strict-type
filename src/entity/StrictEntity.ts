@@ -1,4 +1,5 @@
 import { Path, PathString, StringToPath } from "@/path";
+import { MAX_RECURSIVE_LENGTH } from "@/constants";
 import { ConditionalExcept, UnionToIntersection } from "type-fest";
 import { SimplifyDeep } from "type-fest/source/merge-deep";
 import { IsRelation, PickRelations } from "./Relation";
@@ -7,22 +8,25 @@ import { ObjectLiteral } from "typeorm";
 type _StrictEntity<
   E extends ObjectLiteral,
   P extends Path<PickRelations<E>> = [],
-> = ConditionalExcept<
-  {
-    [K in keyof E]: UnionToIntersection<
-      E[K] extends object
-        ? IsRelation<E[K]> extends true
-          ? P extends [K, ...infer R]
-            ? R extends Path<PickRelations<E[K]>>
-              ? _StrictEntity<E[K], R>
-              : _StrictEntity<E[K]>
-            : never
-          : E[K]
-        : E[K]
+  C extends 0[] = [], // counter of depth
+> = C["length"] extends MAX_RECURSIVE_LENGTH
+  ? E
+  : ConditionalExcept<
+      {
+        [K in keyof E]: UnionToIntersection<
+          E[K] extends object
+            ? IsRelation<E[K]> extends true
+              ? P extends [K, ...infer R]
+                ? R extends Path<PickRelations<E[K]>>
+                  ? _StrictEntity<E[K], R, [...C, 0]>
+                  : _StrictEntity<E[K], [], [...C, 0]>
+                : never
+              : E[K]
+            : E[K]
+        >;
+      },
+      never
     >;
-  },
-  never
->;
 
 export type StrictEntity<
   E extends ObjectLiteral,
