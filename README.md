@@ -31,7 +31,7 @@ class Sample {
 
 const sampleRepository = dataSource.getRepository(
   Sample
-) as SafeRepository<Sample>; // 2. Cast repository to the SafeRepository
+) as unknown as SafeRepository<Sample>; // 2. Cast repository to the SafeRepository
 
 // 3. Just use the repository. The properties of returned types are automatically filtered
 const withoutRelations = await sampleRepository.find();
