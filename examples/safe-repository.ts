@@ -63,7 +63,7 @@ const dataSource = new DataSource({
 
 const photoRepository = dataSource.getRepository(
   Photo
-) as SafeRepository<Photo>; // 2. Cast repository to the SafeRepository
+) as unknown as SafeRepository<Photo>; // 2. Cast repository to the SafeRepository
 
 // 3. Just use the repository. The properties of returned types are automatically filtered
 async function example() {
