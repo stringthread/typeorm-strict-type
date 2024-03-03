@@ -78,6 +78,27 @@ describe("Path", () => {
       }>
     >().toEqualTypeOf<[] | ["a"] | ["b"]>();
   });
+
+  it("should accept self-referenced mapped types", () => {
+    type A = {
+      b: B;
+    };
+    type B = {
+      a: A;
+    };
+    // should accept at least depth of 6
+    expectTypeOf<
+      | []
+      | ["b"]
+      | ["b", "a"]
+      | ["b", "a", "b"]
+      | ["b", "a", "b", "a"]
+      | ["b", "a", "b", "a", "b"]
+      | ["b", "a", "b", "a", "b", "a"]
+    >().toMatchTypeOf<Path<A>>();
+    // should not accept invalid array
+    expectTypeOf<Path<A>>().not.toMatchTypeOf<["b", "a", "a"]>();
+  });
 });
 
 describe("PathString", () => {
@@ -100,6 +121,21 @@ describe("PathString", () => {
         e: number;
       }>
     >().toEqualTypeOf<"" | "a" | "a.b" | "a.c" | "a.c.d" | "e">();
+  });
+
+  it("should accept self-referenced mapped types", () => {
+    type A = {
+      b: B;
+    };
+    type B = {
+      a: A;
+    };
+    // should accept at least depth of 6
+    expectTypeOf<
+      "" | "b" | "b.a" | "b.a.b" | "b.a.b.a" | "b.a.b.a.b" | "b.a.b.a.b.a"
+    >().toMatchTypeOf<PathString<A>>();
+    // should not accept invalid array
+    expectTypeOf<PathString<A>>().not.toMatchTypeOf<"b.a.a">();
   });
 });
 
@@ -134,5 +170,17 @@ describe("StringToPath", () => {
       c: string;
     };
     expectTypeOf<StringToPath<t, "">>().toEqualTypeOf<[]>();
+  });
+
+  it("should accept self-referenced mapped types", () => {
+    type A = {
+      b: B;
+    };
+    type B = {
+      a: A;
+    };
+    expectTypeOf<StringToPath<A, "b.a">>().toEqualTypeOf<
+      [] | ["b"] | ["b", "a"]
+    >();
   });
 });

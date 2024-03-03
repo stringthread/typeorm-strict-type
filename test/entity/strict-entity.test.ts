@@ -103,4 +103,16 @@ describe("StrictEntity", () => {
       b2: { n: number };
     }>();
   });
+
+  it("should accept self-referenced mapped types", () => {
+    class A {
+      constructor(public b: Relation<B>) {}
+    }
+    class B {
+      constructor(public a: Relation<A>) {}
+    }
+    expectTypeOf<StrictEntity<A, "b">>().toEqualTypeOf<{
+      b: {}; // eslint-disable-line @typescript-eslint/ban-types
+    }>();
+  });
 });
