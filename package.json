@@ -1,6 +1,6 @@
 {
   "name": "typeorm-strict-type",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An all-TypeScript package which provides safer typing for functions in TypeORM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
