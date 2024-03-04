@@ -9,6 +9,7 @@
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "test": "vitest --typecheck",
     "test:types": "vitest --typecheck.only",
+    "test:build": "tsc --noEmit",
     "build": "tsc --build tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
