@@ -182,4 +182,16 @@ describe("StrictEntity", () => {
       b: {}; // eslint-disable-line @typescript-eslint/ban-types
     }>();
   });
+
+  it("should accept arrays in self-referenced mapped types", () => {
+    class A {
+      constructor(public b: Relation<B>[]) {}
+    }
+    class B {
+      constructor(public a: Relation<A[]>) {}
+    }
+    expectTypeOf<StrictEntity<A, "b.a">>().toEqualTypeOf<{
+      b: { a: {}[] }[]; // eslint-disable-line @typescript-eslint/ban-types
+    }>();
+  });
 });
