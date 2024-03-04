@@ -1,9 +1,21 @@
-import { ConditionalPickDeep } from "type-fest";
+import { ConditionalPickDeepRich } from "@/utils/conditionalPickDeepRich";
 
-declare const RelationNominality: unique symbol;
+export declare const RelationNominality: unique symbol;
 
 export type Relation<T extends object> = T & { [RelationNominality]: never };
 
-export type IsRelation<T> = T extends { [RelationNominality]: never } ? true : false;
+export type IsRelation<T> = T extends { [RelationNominality]: never }
+  ? true
+  : false;
 
-export type PickRelations<T extends object> = ConditionalPickDeep<T, { [RelationNominality]: never }>;
+export type PickRelations<T extends object> = ConditionalPickDeepRich<
+  T,
+  { [RelationNominality]: never }
+>;
+
+export type CopyIsRelation<From, To extends object> =
+  IsRelation<From> extends true ? Relation<To> : To;
+
+export type CopyRelationTypes<From, To> = To extends object
+  ? CopyIsRelation<From, To>
+  : To;
