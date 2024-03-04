@@ -77,6 +77,28 @@ describe("SafeRepository", () => {
     >();
   });
 
+  it("find should accept arrays in self-referenced mapped types", async () => {
+    class A {
+      constructor(public b: Relation<B>[]) {}
+    }
+    class B {
+      constructor(public a: Relation<A[]>) {}
+    }
+    const repository = {} as unknown as SafeRepository<A>;
+    const result = await repository.find?.({
+      relations: {
+        b: { a: true },
+      },
+    });
+    expectTypeOf(result).toEqualTypeOf<
+      {
+        b: {
+          a: {}[]; // eslint-disable-line @typescript-eslint/ban-types
+        }[];
+      }[]
+    >();
+  });
+
   it("findBy should omit relations", async () => {
     const repository = {} as unknown as SafeRepository<Entity>;
     const result = await repository.findBy?.();
