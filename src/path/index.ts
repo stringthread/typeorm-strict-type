@@ -32,9 +32,9 @@ type PathImpl<
 > = C["length"] extends MAX_RECURSIVE_LENGTH
   ? [K] | [K, ...any[]] // eslint-disable-line @typescript-eslint/no-explicit-any
   : V extends Promise<infer I>
-    ? PathImpl<K, I>
+    ? PathImpl<K, I, C>
     : V extends Array<infer I>
-      ? PathImpl<K, I>
+      ? PathImpl<K, I, C>
       : HasPath<V> extends true
         ? [K] | [K, ...Path<V, [...C, 0]>]
         : [K];
@@ -52,9 +52,9 @@ type PathStringImpl<
 > = C["length"] extends MAX_RECURSIVE_LENGTH
   ? `${K}` | `${K}.${any}` // eslint-disable-line @typescript-eslint/no-explicit-any
   : V extends Promise<infer I>
-    ? PathStringImpl<K, I>
+    ? PathStringImpl<K, I, C>
     : V extends Array<infer I>
-      ? PathStringImpl<K, I>
+      ? PathStringImpl<K, I, C>
       : IsPlainObject<V> extends true
         ? `${K}` | `${K}.${_PathString<V, [...C, 0]>}`
         : `${K}`;
