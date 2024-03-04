@@ -7,7 +7,24 @@ import {
   OneToOne,
   JoinColumn,
   DataSource,
+  OneToMany,
+  ManyToOne,
 } from "typeorm";
+
+@Entity()
+class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @OneToMany(() => Photo, (photo) => photo.user)
+  photos: Relation<Photo>[]; // 1. Annotate relation
+  // Relation<Photo[]> is also available
+
+  constructor(id: number, photos: Relation<Photo>[]) {
+    this.id = id;
+    this.photos = photos;
+  }
+}
 
 @Entity()
 class Photo {
@@ -19,12 +36,21 @@ class Photo {
   })
   name: string;
 
+  @ManyToOne(() => User, (user) => user.photos)
+  user: Relation<User>; // 1. Annotate relation
+
   @OneToOne(() => PhotoMetadata, (metadata) => metadata.photo)
   metadata: Relation<PhotoMetadata>; // 1. Annotate relation
 
-  constructor(id: number, name: string, metadata: Relation<PhotoMetadata>) {
+  constructor(
+    id: number,
+    name: string,
+    user: Relation<User>,
+    metadata: Relation<PhotoMetadata>
+  ) {
     this.id = id;
     this.name = name;
+    this.user = user;
     this.metadata = metadata;
   }
 }
@@ -76,12 +102,19 @@ async function example() {
 
   const photosWithRelation = await photoRepository.find({
     relations: {
+      user: true,
       metadata: true,
     },
   });
   type HasMetadataInPhotosWithRelation =
     (typeof photosWithRelation)[number] extends {
       metadata: unknown;
+    }
+      ? true
+      : false; // true
+  type HasUserInPhotosWithRelation =
+    (typeof photosWithRelation)[number] extends {
+      user: unknown;
     }
       ? true
       : false; // true
